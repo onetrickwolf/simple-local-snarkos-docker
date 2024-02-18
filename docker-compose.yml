@@ -1,0 +1,45 @@
+version: '3.8'
+
+x-snarkos-common: &snarkos-common
+  build:
+    context: .
+  env_file: .env
+  networks:
+    - snarkos-network
+
+x-snarkos-command: &snarkos-command >
+  snarkos start --nodisplay --bft 0.0.0.0:5000 --rest 0.0.0.0:3030 
+  --peers snarkos-validator-0:4130 --validators snarkos-validator-0:5000
+  --verbosity 1 --dev $$NODE_ID --dev-num-validators $$NUM_INSTANCES
+  --validator --metrics
+
+services:
+  snarkos-validator-0:
+    environment:
+      NODE_ID: 0
+    <<: *snarkos-common
+    command: *snarkos-command
+    ports:
+      - "3030:3030"
+
+  snarkos-validator-1:
+    environment:
+      NODE_ID: 1
+    <<: *snarkos-common
+    command: *snarkos-command
+
+  snarkos-validator-2:
+    environment:
+      NODE_ID: 2
+    <<: *snarkos-common
+    command: *snarkos-command
+
+  snarkos-validator-3:
+    environment:
+      NODE_ID: 3
+    <<: *snarkos-common
+    command: *snarkos-command
+
+networks:
+  snarkos-network:
+    driver: bridge
